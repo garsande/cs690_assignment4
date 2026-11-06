@@ -48,3 +48,87 @@ changed:   wrote "copy it without the line numbers" into the read_file and edit_
 ```
 
 ## My entries
+
+artifact:  agent/tools.py, safe_path, read_file, edit_file, format_report, run_tests, at commit 5036a692d557d5bfbc5bb4c230383c0574f3375c
+tool:      ChatGPT, model GPT-6, 2026-11-06
+prompts:   prompts/tools-01.md
+review:    reviewed the implementations against the function comments and
+           test expectations. Checked path validation, line limits,
+           exact text replacement, error messages, and test reporting.
+           Fixed missing imports and file placement issues during testing.
+           Kept the given functions and TOOLS list unchanged.
+checks:    pytest tests/test_tools.py -v passed
+evidence:  comments and docstring rules in agent/tools.py;
+           tests/test_tools.py
+risk:      full test suite has not been verified; additional edge cases
+           may remain untested
+
+
+artifact:  agent/policy.py, gate_for, budget_stop, is_stuck, at commit 5036a692d557d5bfbc5bb4c230383c0574f3375c
+tool:      ChatGPT, model GPT-6, 2026-11-06
+prompts:   prompts/policy-01.md
+review:    reviewed the implementations against the function comments and
+           test expectations. Checked tool permissions, approval requirements,
+           denial of edits to tests/, budget limits, and repeated test failures.
+           Verified path normalization and step-budget priority.
+           Kept the given GATES dictionary and TESTS_RULE unchanged.
+checks:    pytest tests/test_policy.py -v passed
+evidence:  comments and policy rules in agent/policy.py;
+           tests/test_policy.py: passed
+risk:      full test suite has not been verified; additional edge cases
+
+artifact:  agent/reflexion.py, judge, write_lesson, reflexion, at commit 5036a692d557d5bfbc5bb4c230383c0574f3375c
+tool:      ChatGPT, model GPT-6, 2026-11-06
+prompts:   prompts/reflexion-01.md
+review:    reviewed the implementations against the function comments and
+           test expectations. Checked acceptance test execution, timeout
+           handling, lesson generation, and retry behavior. Verified that
+           lessons are normalized, limited to 600 characters, and appended
+           to NOTES.md for subsequent attempts. Checked that provider errors
+           stop execution and successful acceptance tests end the loop.
+           Kept JUDGE_PATTERN, LESSON_SYSTEM, and LESSON_PROMPT unchanged.
+checks:    python -m py_compile reflexion.py: passed
+           pytest tests/test_reflexion.py -v: not yet verified
+evidence:  HANDOUT Part 4; comments above judge, write_lesson,
+           and reflexion in agent/reflexion.py; tests/test_reflexion.py:  passed
+risk:      full integration tests have not been verified; edge cases
+           involving provider failures, note persistence, and repeated
+           attempts may remain untested.
+           involving path normalization and budget boundaries may remain untested.
+
+artifact:  agent/loop.py, build_system_prompt, run_agent, at commit 5036a692d557d5bfbc5bb4c230383c0574f3375c
+tool:      ChatGPT, model GPT-6, 2026-11-06
+prompts:   prompts/loop-01.md
+review:    reviewed the implementations against the function comments and
+           test expectations. Checked system prompt construction, model
+           calls, tool execution, approval handling, and stop conditions.
+           Verified that denied tools never execute and rejected edits
+           return feedback to the model. Ensured all tool results in a
+           turn are processed before checking the stuck condition.
+           Kept BASE_SYSTEM and NOTES_HEADER unchanged and avoided
+           using an agent framework.
+checks:    python -m py_compile loop.py: passed
+           pytest tests/test_loop.py -v: passed
+evidence:  comments above build_system_prompt and
+           run_agent in agent/loop.py; tests/test_loop.py
+risk:      integration with the complete project has not been verified;
+           additional cases involving multiple tool calls in one turn
+           may remain untested.
+
+artifact:  server.py, mcp, main, at commit 5036a692d557d5bfbc5bb4c230383c0574f3375c
+tool:      ChatGPT, model GPT-6, 2026-11-06
+prompts:   prompts/server-01.md
+review:    reviewed the implementation against the Part 5 instructions
+           and test expectations. Checked MCPServer initialization,
+           registration of all four tools, command-line argument
+           parsing, workspace configuration, and stdio transport.
+           Verified that importing server.py does not start the server.
+           Preserved the existing imports and main entry point.
+checks:    python -m py_compile server.py: passed
+           pytest tests/test_server.py -v: passed
+evidence:  requirements in server.py;
+           tests/test_server.py
+risk:      MCP client integration has not been verified in the complete
+           project environment; tool registration and error propagation
+           require confirmation through integration tests.
+
