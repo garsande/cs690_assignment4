@@ -1,19 +1,22 @@
-"""Your MCP server: the same four tools, offered to any MCP host. Part 5 of HANDOUT.md.
 
-YOU WRITE this file. It is short: about 15 lines.
+"""MCP server exposing the coding agent's project tools.
 
-What it must do:
-  1. Create an MCPServer named "a4-tools" and keep it in a module-level variable named mcp.
-  2. Register every function in agent.tools.TOOLS as a tool, with mcp.add_tool(fn).
-     That is the same as putting @mcp.tool() on the function: the function's name becomes
-     the tool's name, its docstring becomes the description, and its parameters become
-     the input schema.
-  3. Only when run as a program (inside `if __name__ == "__main__":`), read one required
-     command-line option, --workspace PATH, call tools.use_workspace(PATH), then
-     mcp.run(transport="stdio").
+Creates an MCPServer named "a4-tools" and registers the four tools
+defined in agent.tools.TOOLS: list_files, read_file, edit_file,
+and run_tests.
 
-Importing this file must not start the server: the tests import it and talk to `mcp`
-directly.
+Each tool's name, description, and input schema are derived from
+its Python function name, docstring, and parameters.
+
+When executed directly, the server requires a --workspace PATH
+argument identifying the project folder. It configures the workspace
+and starts the MCP server using stdio transport.
+
+Importing this module does not start the server, allowing tests
+and other MCP clients to connect to the server directly.
+
+File operations are restricted to the configured workspace
+by the underlying agent tools.
 """
 
 import argparse
@@ -22,12 +25,41 @@ from mcp.server import MCPServer
 
 from agent import tools
 
-# TODO(Part 5): create the server, register the tools, and write main(). About 15 lines.
-mcp = None
+
+# Create the MCP server.
+mcp = MCPServer("a4-tools")
+
+
+# Register the four agent tools.
+for fn in tools.TOOLS:
+    mcp.add_tool(fn)
 
 
 def main() -> None:
-    raise NotImplementedError("Part 5: write server.py")
+    """Configure the workspace and start the MCP server.
+
+    Requires --workspace PATH as a command-line argument.
+    The path identifies the project directory containing files
+    that the agent can inspect, edit, and test.
+
+    Starts the server using stdio transport so MCP clients
+    can discover and invoke the registered tools.
+    """
+    parser = argparse.ArgumentParser(
+        description="MCP server for Assignment 4 coding agent tools."
+    )
+
+    parser.add_argument(
+        "--workspace",
+        required=True,
+        help="Path to the project workspace."
+    )
+
+    args = parser.parse_args()
+
+    tools.use_workspace(args.workspace)
+
+    mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":
