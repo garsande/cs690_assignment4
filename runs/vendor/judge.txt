@@ -1,0 +1,21 @@
+Results for runs/vendor/workspace
+
+Visible tests (the workspace's tests/ folder):
+PASSED: 4 of 4 tests passed.
+
+Judge (judge/acceptance_test.py):
+PASSED: 6 of 6 tests passed.
+
+Files that differ from fixture/: discounts.py (changed)
+
+--- fixture/discounts.py
++++ workspace/discounts.py
+@@ -15,2 +15,3 @@
+         return total_cents
++    code = code.upper()
+     if code not in CODES:
+@@ -18,2 +19,4 @@
+     percent, last_day = CODES[code]
++    if today > last_day:
++        raise ValueError(f"expired code: {code}")
+     discount = total_cents * percent // 100
